@@ -1,0 +1,40 @@
+#!/usr/bin/env aya
+
+import ::sys
+import ::io
+
+path.aya "manual" + :source;
+"./docs/source" path! :dest;
+
+.# Convert markdown files to rst files
+source sys.readdir.[{".md"N0>}] :# {file : filename out in,
+    file "." |.[0] :filename;
+    dest "$filename.rst" + :out;
+    source file +: in;
+    "Converting $in -> $out" :P
+    ["pandoc" "--from=markdown" "--to=rst" "--output=$out"  "$in"] :{sys.exec}
+};
+
+.# Operator page
+from "./gen_op_tables" import ::op_page_str
+.# Write to temp file
+op_page_str "ophtml.html" 0 .G
+.# Use pandoc to convert file
+dest "operators.rst" + :op_out;
+["pandoc" "--from=markdown" "--to=rst" "--output=$op_out"  "./ophtml.html"] :{sys.exec}
+
+.# Convert .md links to .html links
+dest sys.readdir.[{".rst"N0>}] :# {fname : content,
+    dest fname + P:fpath;
+    .# Read the file
+    fpath G :content;
+    .# replace .md links with .html ones
+    content ("\.md>" ".html>" .&) ("\.md#" ".html#" .&) :content;
+    .# Write it back to the file
+    fpath 'w file!:f;
+    content f.print;
+    f.close;
+};
+
+.# Copy images over
+["cp" "-r" "$source/img" dest] :{sys.exec}
