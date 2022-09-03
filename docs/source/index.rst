@@ -30,6 +30,7 @@ Contents
    variables_and_scope
    user_types
    standard_library
+   debugging
 
 
 
