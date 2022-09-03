@@ -15,7 +15,7 @@ Aya is a stack based language.
    0
 
 Generally, most symbols that are not a lowercase letter are an operator
-(Including uppercase letters). Extended operators come in the form
+(including uppercase letters). Extended operators come in the form
 ``.*``, ``M*``, ``:*``, where ``*`` is *any* character. Aya has many
 cool operators. For example:
 
@@ -61,32 +61,23 @@ cool operators. For example:
    aya> 9 R [3 3] L #{E 1 +}
    [4 4 4]
 
--  Many operators are broadcasted automatically however. For example:
-   the square root (``Mq``), addition (``+``), and multiplication
-   (``*``) operators.
+Many operators are broadcasted automatically. For example: the square
+root (``.^``), addition (``+``), multiplication (``*``), and factorial
+(``M!``) operators. Aya also supports complex numbers (``:-64i``),
+fractional numbers (``:1r2`` is ``1/2``), and extended precision numbers
+(``:100x``).
 
 ::
 
-   aya> [4 16 64 ] Mq
-   [ 2 4 8 ]
-   aya> [1 2 3] 1 +
-   [ 2 3 4 ]
+   aya> [4 16 :-64i ] .^
+   [ 2 4 :0i8 ]
+   aya> [1 2 3] :1r2 +
+   [ :3r2 :5r2 :7r2 ]
    aya> [1 2 3] [10 20 30] *
    [ 10 40 90 ]
-
-Aya has many types of objects. The ``:T`` operator is used to get the
-type. It returns a *Symbol* (``::symbol_name``)
-
-::
-
-   aya> aya> 1 :T
-   ::num
-   aya> [1 2 3] :T
-   ::list
-   aya> [1 2 3] :T :T
-   ::sym
-   aya> [ 1 [1 2 3] "hello" 'c {, 1:x } {2+} ::red ] #:T
-   [ ::num ::list ::str ::char ::dict ::block ::sym ]
+   aya> [10 100 :100z] M!
+   [10 100 :100z] M!
+   [ 3628800 0 :93326215443944152681699238856266700490715968264381621468592963895217599993229915608941463976156518286253697920827223758251185210916864000000000000000000000000z ]
 
 Lowercase letters and underscores are used for variables. The colon
 (``:``) operator is used for assignment. Like the apply operator
@@ -108,6 +99,31 @@ the stack to stdout.
 
    aya> first " " + second + :P
    "Hello world!"
+
+Aya has many types of objects. The ``:T`` operator is used to get the
+type. It returns a *Symbol* (``::symbol_name``)
+
+::
+
+   aya> aya> 1 :T
+   ::num
+   aya> [1 2 3] :T
+   ::list
+   aya> [1 2 3] :T :T
+   ::sym
+   aya> [ 1 [1 2 3] "hello" 'c {, 1:x } {2+} ::red ] #:T
+   [ ::num ::list ::str ::char ::dict ::block ::sym ]
+
+You can create your own types
+
+::
+
+   aya> struct point {x y}
+   <type 'point'> 
+   aya> 1 2 point! :p
+   ( 1 2 ) point! 
+   aya> p :T
+   ::point
 
 Aya supports string interpolation.
 
@@ -136,29 +152,18 @@ of functions.
    {2 *}
    aya> 4 double
    8
-   aya> .# Wrap in additional set of braces to assign as a block
-   aya> {{1 +}}:foo
-   {{1 +}}
-   aya> foo
-   {1 +}
-   aya> 10 foo ~
-   11
 
 Blocks may have arguments and local variables. In the example below,
 ``a``, ``b``, and ``c`` are arguments and ``x`` and ``y`` are local
-variables. Variables that are not declared local will use the next outer
-scope that declares it as local. If no outer scope declares the
-variable, it will be assigned in the global scope.
+variables.
 
 ::
 
    aya> {a b c : x y,
             a 2 * :x; .# local
             b 3 * :y; .# local
-            a 1 + :a; .# arguments are local as well
-            x y + :z; .# not local, assign global variable z
 
-            [a b c x y z] .# return a list with vars inside
+            [a b c x y] .# return a list with vars inside
         }:myfun;
 
 The following will call ``myfun`` and assign 1 to ``a``, 2 to ``b``, and
@@ -168,18 +173,15 @@ The following will call ``myfun`` and assign 1 to ``a``, 2 to ``b``, and
 
    aya> 1 2 3 myfun
    [2 2 3 2 6 8]
-   aya> .# a b c x y & z are no longer in scope
+   aya> .# a b c x y are no longer in scope
    aya> a
    ERROR: Variable a not found
    aya> x
-   ERROR: Variable x not found
-   aya> z
-   8
+   ERROR: Variable a not found
 
 Block headers may include type assertions and local variable
-initializers. Local variable initializers must be literal constants. By
-default all local variables are initialized to ``0`` (see ``y`` in the
-example below).
+initializers. By default all local variables are initialized to ``0``
+(see ``y`` in the example below).
 
 ::
 
@@ -213,57 +215,32 @@ Aya also supports dictionaries. ``{,}`` creates an empty dictionary.
      3:x;
    }
 
-Dictionaries also support metatables.
-
-::
-
-   aya> {, {v, v.x v.y +}:add; "hello":foo; } :mtable;
-   aya> {, 1:x 6:y }:point;
-   {, 1:x; 6:y; }
-   aya> mtable point.:__meta__; .# Set mtable as point's metatable
-
-Keys from metatables are available but hidden.
-
-::
-
-   aya> point
-   {, 1:x; 6:y; }
-   aya> point.x point.y point.foo
-   1 6 "hello"
-   aya> point.add
-   7
-
-Metatables can be used to create user-defined types. The ``struct``
-macro creates a ``point`` metatable. The ``!`` operator calls the
-``point`` constructor which creates a new table with ``x`` and ``y``
-values and sets itself as the new table’s metatable. *See the wiki for
-more details.*
-
-::
-
-   aya> struct point {x y}
-   aya> 3 4 point! :p
-   ( 3 4 ) point!
-   aya> [1 "hello" p] #:T
-   [::num ::str ::point]
-   aya> {self, self.x 2* self.y 2* self!} point.:double;
-   aya> 3 4 point!:p;
-   aya> p.double
-   ( 6 8 ) point!
-
 Aya also supports operator overloading for many operators. Type
 ``\? overloadable`` in the Aya interpreter to get a list of all
 overloadable operators.
 
 ::
 
-   aya> {other self,
+   aya> struct point {x y}
+   aya> def point::__add__ {other self,
             other.x self.x +
             other.y self.y +
             self!
-        } point.:__add__;
+        }
    aya> 3 4 point! 5 6 point! +
    ( 8 10 ) point!
+
+Aya has a growing standard library including:
+
+-  2d Matrix Object
+-  Dataframes
+-  JSON, CSV reading/writing
+-  Image reading/writing
+-  Sockets
+-  2d graphics
+-  Plotting
+-  Math & statistics
+-  And more (see the standard library section)
 
 The Aya core language supports many other cool things such as
 **closures**, built-in **fraction** and **arbitrary precision** numbers,
