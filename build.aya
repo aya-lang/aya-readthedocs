@@ -18,22 +18,9 @@ source sys.readdir.[{".md"N0>}] :# {file : filename out in,
 .# Operator page
 from "./gen_op_tables" import ::op_page_str
 .# Write to temp file
-op_page_str "ophtml.html" 0 .G
-.# Use pandoc to convert file
+op_page_str "oprst.rst" 0 .G
 dest "operators.rst" + :op_out;
-["pandoc" "--from=markdown" "--to=rst" "--output=$op_out"  "./ophtml.html"] :{sys.exec}
-
-.# Add RST header
-"""Operators
-=========
-
-""" op_out P G + 
-.# and write it back
-"operators.rst" 0 .G
-["cp" "operators.rst" "$op_out"] :{sys.exec}
-["rm" "operators.rst"] :{sys.exec}
-
-
+["mv" "oprst.rst" "$op_out"] :{sys.exec}
 
 .# Convert .md links to .html links
 dest sys.readdir.[{".rst"N0>}] :# {fname : content,

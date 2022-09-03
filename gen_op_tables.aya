@@ -4,6 +4,8 @@ export ::op_page_str
 
 import ::dataframe
 
+{.lines :# {"  "\+} "\n" *}:indent;
+
 .# Type Key
 {,
 
@@ -19,34 +21,50 @@ import ::dataframe
     ["Type" "Abbreviation"]:colnames;
 } dataframe! :abbr_table;
 
-{, 1:noindex } abbr_table.to_html :abbr_table_html;
+{, 1:noindex } abbr_table.to_csv indent :abbr_table_csv;
+
 
 {:C "\"" "" .&}:sym_to_str;
-{"<pre>"\+ "</pre>" +}:pre;
-{"<code>"\+ "</code>" +}:code;
+{:& "" =! {"``"\+ "``" +} ?}:code;
 .# "__foo__" => "\_\_foo\_\_"
 {#{x, x'_=! x "\_" .?}S}:escape_underscore;
 
 {,
     0M?:#{op, [
-        op.name pre
-        op.ops :K #sym_to_str '|* pre
+        op.name code
+        op.ops :K #sym_to_str '|* code
         op.ops :# {k v,
-            "<code>$(k sym_to_str)</code> : $v"
-        }:V "<br />" *
-        op.overload "/" | #code " / " * escape_underscore
+            k sym_to_str code :&""={"n/a"+}? " : $v" +
+        }:V ", " *
+        op.overload "/" | #code " / " *
     ]}:data;
 
-    ["Name" "Ars" "Ops" "Overload"]:colnames;
+    ["Name" "Args" "Ops" "Overload"]:colnames;
 }dataframe! :op_table;
 
-{, 1:noindex 1:border } op_table.to_html :op_table_str;
+{, 1:noindex 1:border } op_table.to_csv indent :op_table_csv;
 
-"""
-<h2>Type Abbreviations</h2>
-$abbr_table_html
+op_table_csv
+("\\\\" "\\\\\\\\" .&)
+("`" "\`" .&)
+.# ("_" "\\\\_" .&)
+:op_table_csv;
 
-<h2>Operators</h2>
-$op_table_str
+"""Operators
+=========
+
+Type Abbreviations
+------------------
+
+.. csv-table::
+
+$abbr_table_csv
+
+Operator Table
+--------------
+
+.. csv-table::
+
+$op_table_csv
 """ :% :op_page_str;
 
