@@ -11,10 +11,263 @@ structures such as queues, stacks, and sets. The standard library also
 contains a file which defines extended ASCII operators for use when code
 golfing.
 
-``matrix``
-^^^^^^^^^^
+``asciiart``
+~~~~~~~~~~~~
 
-The ``matrix`` type provides a basic interface and operator overloads
+Provides an asciiart datatype and several operator overloads for drawing
+complex ascii art pictures with only a few characters.
+
+Run length encoding:
+
+::
+
+   aya> "  #` # #`5#"_
+   asciiart:
+     #  
+    # # 
+   #####
+
+Operator overloads
+
+::
+
+   aya> "  #` # #`5#"_ T
+   asciiart:
+     #
+    ##
+   # #
+    ##
+     #
+
+   aya> "  #` # #`5#"_ $I
+   asciiart:
+               #            
+              # #           
+             #####          
+          #         #       
+         # #       # #      
+        #####     #####     
+     #    #    #    #    #  
+    # #  # #  # #  # #  # # 
+   #########################
+
+``bitset``
+~~~~~~~~~~
+
+Provides the ``bitset`` type
+
+::
+
+   aya> 8 bitset! :b
+   [ 0 0 0 0 0 0 0 0 ]bitset! 
+   aya> 3 b.set
+   aya> 5 b.set
+   aya> b
+   [ 0 0 0 1 0 1 0 0 ]bitset! 
+   aya> b.count
+   2
+
+``canvas``
+~~~~~~~~~~
+
+Graphics library for creating images and animations. See
+``examples/canvas`` for more examples.
+
+.. figure:: img/vaporwave_city.png
+   :alt: Vaporwave City
+
+   Vaporwave City
+
+.. figure:: img/cube.gif
+   :alt: 3D Cube
+
+   3D Cube
+
+``color``
+~~~~~~~~~
+
+The ``color`` library defines basic color constructors and conversions.
+
+::
+
+   aya> 14 57 100 color!
+   (14 57 100) color! 
+
+   aya> color.colors.violet :violet
+   (238 130 238) color! 
+
+   aya> violet.hsv
+   [ 300 .45378151 .93333333 ] 
+
+   aya> violet.hex
+   "ee82ee" 
+
+   aya> 5 color.colors.red color.colors.blue.grad
+   [
+     (255 0 0) color!
+     (191 0 63) color!
+     (127 0 127) color!
+     (63 0 191) color!
+     (0 0 255) color!
+   ] 
+
+``csv``
+~~~~~~~
+
+Provides functions for reading and writing CSV files
+
+::
+
+   aya> "examples/data/simple.csv" csv.read
+   {,
+     [
+       [ 1 2 3 ]
+       [ 4 5 6 ]
+       [ 7 8 9 ]
+     ]:data;
+     nil:rownames;
+     [ "A" "B" "C" ]:colnames;
+   } 
+
+``dataframe``
+~~~~~~~~~~~~~
+
+The ``dataframe`` type is an interface for working with tables. CSV
+files can be directly imported and modified or the data can be generated
+by the program itself.
+
+::
+
+   aya> {, [[1 2 3][4 5 6]]:data ["x" "y" "z"]:colnames} dataframe!
+       x y z
+   0 | 1 2 3
+   1 | 4 5 6 
+
+   aya> {, [[1 2 3][4 5 6]]:data ["x" "y" "z"]:colnames} dataframe! :df
+       x y z
+   0 | 1 2 3
+   1 | 4 5 6 
+
+   aya> df.["x"]
+   [ 1 4 ] 
+
+   aya> "examples/data/simple.csv" dataframe.read_csv
+       A B C
+   0 | 1 2 3
+   1 | 4 5 6
+   2 | 7 8 9 
+
+``date``
+~~~~~~~~
+
+The date script provides a basic interface for the date parsing
+operators ``Mh`` and ``MH``. It also provides basic date unit addition
+and subtraction.
+
+::
+
+   aya> date.now
+   May 01, 2017 12:53:25 PM
+
+   aya> date.now.year
+   2017
+
+   aya> date.now 2 dates.month +
+   Jul 01, 2017 8:53:42 AM
+
+   aya> date.now 2 dates.month + .mmddyy
+   "07/01/17"
+
+``enum``
+~~~~~~~~
+
+The ``enum`` library defines the ``enum`` keyword which uses
+dictionaries and metatables to create enums.
+
+::
+
+   aya> enum shape {circle triangle square}
+
+   aya> shape
+   shape
+
+   aya> shape :T
+   ::enum
+
+   aya> shape.circle
+   shape.circle
+
+   aya> shape.circle :T
+   ::shape
+
+   aya> shape.circle shape.circle =
+   1
+
+``golf``
+~~~~~~~~
+
+``golf`` defines many short variables that are useful when golfing. It
+also uses the ``Mk`` operator to add additional single character
+operators. In the following code, all variables ``ì``, ``¶``, ``¦``,
+``¥`` and ``r`` are defined in the golf script.
+
+::
+
+   aya> .# Generate and print an addition table
+   aya> 6r_ì¶¦¥
+      0   1   2   3   4   5
+      1   2   3   4   5   6
+      2   3   4   5   6   7
+      3   4   5   6   7   8
+      4   5   6   7   8   9
+      5   6   7   8   9  10
+
+Sets default values for many variables
+
+::
+
+   aya> [ a b c d k l p w z ì í]
+   [ 2 3 10 1000 [ ] 3.14159265 -1 0 {+} {-} ]
+
+``image``
+~~~~~~~~~
+
+Library for reading and writing images.
+
+::
+
+   aya> "images/logo.png" image.read :img
+   (image 300x300) 
+   aya> img.width
+   300 
+   aya> img.pixels 5 .<
+   [
+     [ 255 255 255 ]
+     [ 255 255 255 ]
+     [ 255 255 255 ]
+     [ 255 255 255 ]
+     [ 255 255 255 ]
+   ] 
+
+``io``
+~~~~~~
+
+Defines the ``file`` and ``path`` types
+
+``json``
+~~~~~~~~
+
+Library for reading and writing json
+
+``math``
+~~~~~~~~
+
+The ``math`` library provides many math functions
+
+``matrix``
+~~~~~~~~~~
+
+The ``matrix`` library provides a basic interface and operator overloads
 for working with matrices.
 
 ::
@@ -36,87 +289,33 @@ for working with matrices.
    |   36   25  -51 |
    |   20    8  -56 |
 
-``dataframe``
-^^^^^^^^^^^^^
+``missing``
+~~~~~~~~~~~
 
-The ``dataframe`` type is an interface for working with tables. CSV
-files can be directly imported and modified or the data can be generated
-by the program itself.
+Provides the ``missing`` type for working with missing data
 
-::
+``mp``
+~~~~~~
 
-   aya> {, "data/simple.csv":filename } dataframe! :df
-            A    B    C
-     0 |    1    2    3
-     1 |    4    5    6
-     2 |    7    8    9
+Metaprogramming library
 
-   aya> df [[0 1] ["A" "C"]] I
-            A    C
-     0 |    1    3
-     1 |    4    6
+``plot``
+~~~~~~~~
 
-   aya> {, [[1 7 3][8 3 6]]:data } dataframe!
-            a    b
-     0 |    1    8
-     1 |    7    3
-     2 |    3    6
+Plotting interface. See ``examples/plot``
 
-   aya> {, [[1 7 3][8 3 6]]:data ["x" "y" "z"]:index} dataframe!
-            a    b
-     x |    1    8
-     y |    7    3
-     z |    3    6
+``queue``
+~~~~~~~~~
 
-``golf``
-^^^^^^^^
+Queue data structure.
 
-``golf`` defines many short variables that are useful when golfing. It
-also uses the ``Mk`` operator to add additional single character
-operators. In the following code, all variables ``ì``, ``¶``, ``¦``,
-``¥`` and ``r`` are defined in the golf script.
+``random``
+~~~~~~~~~~
 
-::
-
-   aya> .# Generate and print an addition table
-   aya> 6r_ì¶¦¥
-      0   1   2   3   4   5
-      1   2   3   4   5   6
-      2   3   4   5   6   7
-      3   4   5   6   7   8
-      4   5   6   7   8   9
-      5   6   7   8   9  10
-
-A few more examples
-
-::
-
-   aya> [ a b c d k l p w z ì í]
-   [ 2 3 10 1000 [ ] 3.14159265 -1 0 {+} {-} ]
-
-``date``
-^^^^^^^^
-
-The date script provides a basic interface for the date parsing
-operators ``Mh`` and ``MH``. It also provides basic date unit addition
-and subtraction.
-
-::
-
-   aya> date.now
-   May 01, 2017 12:53:25 PM
-
-   aya> date.now.year
-   2017
-
-   aya> date.now 2 dates.month +
-   Jul 01, 2017 8:53:42 AM
-
-   aya> date.now 2 dates.month + .mmddyy
-   "07/01/17"
+Functions for woring with random numbers.
 
 ``set``
-^^^^^^^
+~~~~~~~
 
 The ``set`` script defines a ``set`` type and many operator overloads.
 It defines ``s`` as a prefix operator for the set constructor allowing
@@ -136,86 +335,44 @@ the syntax ``s[ ... ]`` to create sets.
    aya> s[1 2 3] s[2 5] /
    s[ 1 3 ]
 
-``enum``
-^^^^^^^^
+``shell``
+~~~~~~~~~
 
-The ``enum`` script defines the ``enum`` keyword which uses dictionaries
-and metatables to create enums.
+A shell-like interface for the aya REPL.
 
-::
+``socket``
+~~~~~~~~~~
 
-   aya> enum ::shape [::circle ::triangle ::square]
+Socket and socket server interface.
 
-   aya> shape
-   shape
+``stack``
+~~~~~~~~~
 
-   aya> shape :T
-   ::enum
+Stack data structure.
 
-   aya> shape.circle
-   shape.circle
+``stats``
+~~~~~~~~~
 
-   aya> shape.circle :T
-   ::shape
+Provides several statistics functions.
 
-   aya> shape.circle shape.circle =
-   1
+``sys``
+~~~~~~~
 
-``color``
-^^^^^^^^^
+Provides functions for working with the system such as getting or
+changing the working directory.
 
-The ``color`` script defines basic color constructors and conversions.
+``terminal``
+~~~~~~~~~~~~
 
-::
+Functions for formatting text in the terminal (bold, color, etc)
 
-   aya> 14 57 100 color!
-   (14, 57, 100)
+``turtle``
+~~~~~~~~~~
 
-   aya> "0e3964" color.newhex
-   (14, 57, 100)
+Turtle library. See ``examples/turtle``
 
-   aya> colors.cobalt
-   (61, 89, 171)
+``viewmat``
+~~~~~~~~~~~
 
-   aya> colors.cobalt.hsv
-   [ 224.72727273 .64327485 .67058824 ]
-
-   aya> 5 colors.red colors.blue.grad matstr:P
-     255    0    0
-     191    0   63
-     127    0  127
-      63    0  191
-       0    0  255
-
-``file``
-^^^^^^^^
-
-The ``file`` script defines variables for moving around and exploring
-the directory tree. It also defines the ``file`` type which is used for
-opening and editing files.
-
-::
-
-   aya> cd "data"
-   /home/nick/Documents/aya-lang/data/
-
-   aya> ls
-     /rdatasets
-     catalog.csv
-     colors.csv
-     cor.csv
-     p022_names.txt
-     realvals.csv
-     satwords.txt
-     simple.csv
-     simplemat.txt
-     words.txt
-
-   aya> more "simple.csv"
-   A, B, C
-   1, 2, 3
-   4, 5, 6
-   7, 8, 9
-
-   aya> pwd
-   /home/nick/Documents/aya-lang/data/
+Provides the ``viewmat`` function which is used to generate a heatmap
+visualization of a 2d array. See ``examples/canvas/julia``

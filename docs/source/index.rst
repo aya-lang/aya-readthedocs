@@ -13,4 +13,24 @@ Check out the :doc:`tour` section for further information.
 
    This project is under active development.
 
+Contents
+--------
+
+.. toctree::
+
+   tour
+   running_and_installation
+   syntax_overview
+   operators
+   number
+   lists
+   characters_and_strings
+   blocks_and_functions
+   dictionaries
+   variables_and_scope
+   user_types
+   standard_library
+
+
+
 Aya has its documentation hosted on Read the Docs.
