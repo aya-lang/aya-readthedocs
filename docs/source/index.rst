@@ -31,6 +31,7 @@ Contents
    user_types
    metaprogramming
    standard_library
+   canvas_input
    debugging
 
 
