@@ -4,7 +4,7 @@ export ::op_page_str
 
 import ::dataframe
 
-{.lines :# {"  "\+} "\n" *}:indent;
+{.lines :# {"  "\+} "\n" %}:indent;
 
 .# Type Key
 {,
@@ -32,11 +32,11 @@ import ::dataframe
 {,
     0M?:#{op, [
         op.name code
-        op.ops :K #sym_to_str '|* code
+        op.ops :K #sym_to_str '|% code
         op.ops :# {k v,
             k sym_to_str code :&""={"n/a"+}? " : $v" +
-        }:V ", " *
-        op.overload "/" | #code " / " *
+        }:V ", " %
+        op.overload '/ S #code " / " %
     ]}:data;
 
     ["Name" "Args" "Ops" "Overload"]:colnames;
@@ -66,5 +66,5 @@ Operator Table
 .. csv-table::
 
 $op_table_csv
-""" :% :op_page_str;
+""" :B :op_page_str;
 

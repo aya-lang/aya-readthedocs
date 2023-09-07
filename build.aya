@@ -8,7 +8,8 @@ path.aya "manual" + :source;
 
 .# Convert markdown files to rst files
 source sys.readdir.[{".md"N0>}] :# {file : filename out in,
-    file "." |.[0] :filename;
+    file :P
+    file '. S.[0] :filename;
     dest "$filename.rst" + :out;
     source file +: in;
     "Converting $in -> $out" :P
