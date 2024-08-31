@@ -331,7 +331,7 @@ Internals
 
 Keywords such as ``class``, ``struct``, and ``def`` are not actually
 keywords at all. They are regular aya functions defined completely in
-aya code (see base/\ **aya**.aya).
+aya code (see base/**aya**.aya).
 
 Classes, structs, and object instances are simply dictionaries with
 special **meta** dictionaries. If you are interested in seeing how these
